@@ -18,6 +18,15 @@
 
 <body>
     <div class="container">
+      <!-- WiFi Status Bar -->
+      <div class="row mt-3">
+        <div class="col-xl-12">
+          <div id="wifiStatus" class="alert alert-info" role="alert">
+            <strong>WiFi Status:</strong> <span id="wifiStatusText">Checking...</span>
+          </div>
+        </div>
+      </div>
+
       <div class="tm-file-form-container mt-4">
         <form action="index.html" method="GET" class="form-inline tm-file-form">
           <div method="GET" class="text-uppercase tm-setting" onclick="javascrtpt:window.location.href='wifi.htm'" >Setting</div>
@@ -65,7 +74,10 @@
       $(function () {
         $('.tm-current-year').text(new Date().getFullYear());  // Update year in copyright
       });
-      updateList()
+      updateList();
+      updateWifiStatus();
+      // Update WiFi status every 5 seconds
+      setInterval(updateWifiStatus, 5000);
     </script>
 </body>
 </html>

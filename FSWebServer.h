@@ -23,7 +23,7 @@
 #include <ESPAsyncWebServer.h>
 #include <SPIFFS.h>
 #include <Ticker.h>
-#include <ArduinoOTA.h>
+// #include <ArduinoOTA.h>  // Not used, excluded in platformio.ini
 #include <ArduinoJson.h>
 
 #define CONNECTION_LED -1 // Connection LED pin (Built in). -1 to disable

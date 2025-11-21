@@ -8,6 +8,44 @@ if (navigator.userAgent.indexOf('MSIE') !== -1
     renderPage = false;
 }
 
+function updateWifiStatus() {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            var resp = xhr.responseText;
+            var statusDiv = document.getElementById('wifiStatus');
+            var statusText = document.getElementById('wifiStatusText');
+            
+            if (resp.startsWith('WIFI:')) {
+                var status = resp.substring(5); // Remove "WIFI:" prefix
+                
+                if (status.includes('Connected:')) {
+                    var ip = status.split(':')[1];
+                    statusText.innerHTML = '🟢 <strong>WiFi Connected</strong> - IP: ' + ip;
+                    statusDiv.className = 'alert alert-success';
+                } else if (status.includes('Connecting')) {
+                    statusText.innerHTML = '🟡 <strong>Connecting to WiFi...</strong>';
+                    statusDiv.className = 'alert alert-warning';
+                } else if (status.includes('Failed')) {
+                    statusText.innerHTML = '🔴 <strong>WiFi Connection Failed</strong> - Running in AP Mode';
+                    statusDiv.className = 'alert alert-danger';
+                } else if (status.includes('AP_Mode')) {
+                    statusText.innerHTML = '🔵 <strong>Access Point Mode</strong> - SSID: PERMA - IP: 192.168.4.1';
+                    statusDiv.className = 'alert alert-info';
+                } else {
+                    statusText.innerHTML = '⚪ <strong>Status Unknown</strong>';
+                    statusDiv.className = 'alert alert-secondary';
+                }
+            } else {
+                statusText.innerHTML = '⚪ <strong>Status Unknown</strong>';
+                statusDiv.className = 'alert alert-secondary';
+            }
+        }
+    };
+    xhr.open('GET', '/wifistatus', true);
+    xhr.send(null);
+}
+
 function httpPost(filename, data, type) {
     xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = httpPostProcessRequest;

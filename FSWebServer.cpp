@@ -104,19 +104,25 @@ void FSWebServer::onHttpWifiStatus(AsyncWebServerRequest *request) {
   DEBUG_LOG("onHttpWifiStatus\n");
 
   String resp = "WIFI:";
-  switch(network.status()) {
-    case 1:
-      resp += "Failed";
-    break;
-    case 2:
-      resp += "Connecting";
-    break;
-    case 3:
-      IPAddress ip = WiFi.localIP();
-      resp += "Connected:";
-      for (int i=0; i<4; i++)
-        resp += i  ? "." + String(ip[i]) : String(ip[i]);
-    break;
+  
+  // Check if in AP mode or STA mode
+  if (!network.isSTAmode()) {
+    resp += "AP_Mode";
+  } else {
+    switch(network.status()) {
+      case 1:
+        resp += "Failed";
+      break;
+      case 2:
+        resp += "Connecting";
+      break;
+      case 3:
+        IPAddress ip = WiFi.localIP();
+        resp += "Connected:";
+        for (int i=0; i<4; i++)
+          resp += i  ? "." + String(ip[i]) : String(ip[i]);
+      break;
+    }
   }
   request->send(200, "text/plain", resp);
 }
@@ -259,7 +265,7 @@ void FSWebServer::onHttpDownload(AsyncWebServerRequest *request) {
       request->send(500, "text/plain","DOWNLOAD:BADARGS");
       return;
     }
-    const AsyncWebParameter* p = request->getParam(0);
+    const AsyncWebParameter* p = request->getParam((size_t)0);
     String path = p->value();
 
     AsyncWebServerResponse *response = request->beginResponse(200);
@@ -288,7 +294,7 @@ void FSWebServer::onHttpList(AsyncWebServerRequest * request) {
     request->send(500, "text/plain","LIST:BADARGS");
     return;
   }
-  const AsyncWebParameter* p = request->getParam(0);
+  const AsyncWebParameter* p = request->getParam((size_t)0);
   String path = p->value();
 
   if (path != "/" && !SD.exists((char *)path.c_str())) {
@@ -353,7 +359,7 @@ void FSWebServer::onHttpDelete(AsyncWebServerRequest *request) {
     Serial.println("no path arg");
   } 
   else {
-    const AsyncWebParameter* p = request->getParam(0);
+    const AsyncWebParameter* p = request->getParam((size_t)0);
     String path = "/"+p->value();
     Serial.print("path:");
     Serial.println(path);

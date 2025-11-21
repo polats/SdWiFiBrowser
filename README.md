@@ -98,8 +98,15 @@ See **[QUICK_FIX.md](QUICK_FIX.md)** for step-by-step instructions or **[COMPILA
 **PlatformIO:**
 
 ```bash
-platformio run --target upload
-platformio run --target uploadfs
+# Interactive menu
+./upload.sh
+
+# Quick upload (no prompts)
+./quick-upload.sh
+
+# Manual commands
+platformio run --target uploadfs  # Upload SPIFFS
+platformio run --target upload    # Upload firmware
 ```
 
 ### Compilation Steps
@@ -224,6 +231,7 @@ POST /wifiap
 ## Documentation
 
 - **[QUICK_FIX.md](QUICK_FIX.md)**: ⚡ Fast compilation fix guide (start here!)
+- **[SCRIPTS.md](SCRIPTS.md)**: 🚀 Upload scripts guide (PlatformIO)
 - **[USER_GUIDE.md](USER_GUIDE.md)**: Complete user documentation with troubleshooting
 - **[DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)**: Technical architecture and development guide
 - **[COMPILATION_GUIDE.md](COMPILATION_GUIDE.md)**: Detailed ESP32 core compatibility guide
