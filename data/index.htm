@@ -42,22 +42,20 @@
           <progress class="file-boxes" id="progressbar" value="0" max="100"></progress>
       </div>
 
+      <!-- Debug Info Panel -->
+      <div id="debugPanel" class="row mt-3" style="display: none;">
+        <div class="col-xl-12">
+          <div class="alert alert-warning">
+            <strong>Debug Info:</strong>
+            <div id="debugInfo" style="font-family: monospace; font-size: 0.85rem; margin-top: 10px; white-space: pre-wrap;"></div>
+          </div>
+        </div>
+      </div>
+
       <div id="filelist" class="row mt-4 mb-1">
         <div class="col-xl-12">
           <div id="filelistbox" class="file-boxes">
-            <!-- <div class="media">
-              <div class="file-index" >1</div>
-              <div class="media-body tm-bg-gray">
-                <div class="tm-description-box">
-                  <h5 class="tm-text-blue">Vivamus eget urna vitae ante</h5>
-                  <p class="mb-0">Insertion HTML Template includes 3 different pages. </p>
-                </div>
-                <div class="tm-dd-box">
-                  <input id="+filename+" type="button" value="Delete" class=" btn tm-bg-blue tm-text-white tm-dd" >
-                  <input id="+filename+" type="button" method="GET" value="Download" class="btn tm-bg-blue tm-text-white tm-dd">
-                </div>
-              </div>
-            </div> -->
+            <div style="padding: 20px; text-align: center; color: #666;">Loading files...</div>
           </div> <!-- filelistbox -->
         </div>
       </div>

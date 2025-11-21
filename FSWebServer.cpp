@@ -296,45 +296,88 @@ void FSWebServer::onHttpList(AsyncWebServerRequest * request) {
   }
   const AsyncWebParameter* p = request->getParam((size_t)0);
   String path = p->value();
-
-  if (path != "/" && !SD.exists((char *)path.c_str())) {
-    request->send(500, "text/plain","LIST:BADPATH");
-    return;
-  }
+  
+  DEBUG_LOG("List request for path: '%s'\n", path.c_str());
 
   sdcontrol.takeControl();
-  File dir = SD.open((char *)path.c_str());
-  path = String();
+  
+  // Ensure path starts with /
+  if (path.length() == 0 || path[0] != '/') {
+    path = "/" + path;
+  }
+  
+  DEBUG_LOG("Opening path: '%s'\n", path.c_str());
+  
+  // Try to open the directory
+  File dir = SD.open(path.c_str());
+  
+  if (!dir) {
+    DEBUG_LOG("Failed to open path: '%s'\n", path.c_str());
+    sdcontrol.relinquishControl();
+    String errorMsg = "LIST:BADPATH:" + path;
+    request->send(500, "text/plain", errorMsg);
+    return;
+  }
+  
   if (!dir.isDirectory()) {
+    DEBUG_LOG("Path is not a directory: %s\n", path.c_str());
     dir.close();
+    sdcontrol.relinquishControl();
     request->send(500, "text/plain", "LIST:NOTDIR");
     return;
   }
+
   dir.rewindDirectory();
   
-
-  String output = "[";
-  for (int cnt = 0; true; ++cnt) {
+  // Use AsyncResponseStream for efficient streaming
+  AsyncResponseStream *response = request->beginResponseStream("text/json");
+  response->print("[");
+  
+  bool first = true;
+  int count = 0;
+  const int MAX_ITEMS = 200; // Reduced limit
+  
+  // Only list current directory (non-recursive)
+  while (count < MAX_ITEMS) {
     File entry = dir.openNextFile();
     if (!entry) {
       break;
     }
-    if (cnt > 0) {
-      output += ',';
+    
+    if (!first) {
+      response->print(",");
     }
-    output += "{\"type\":\"";
-    output += (entry.isDirectory()) ? "dir" : "file";
-    output += "\",\"name\":\"";
-    output += entry.name();
-    output += "\"";
-    output += ",\"size\":\"";
-    output += String(entry.size());
-    output += "\"";
-    output += "}";
+    first = false;
+    
+    bool isDir = entry.isDirectory();
+    String entryName = String(entry.name());
+    
+    DEBUG_LOG("Entry: '%s' isDir=%d\n", entryName.c_str(), isDir);
+    
+    // Extract just the filename from full path
+    int lastSlash = entryName.lastIndexOf('/');
+    String displayName = (lastSlash >= 0) ? entryName.substring(lastSlash + 1) : entryName;
+    
+    // For the full path, use the entry name as-is (it should be the full path)
+    String fullPath = entryName;
+    
+    response->print("{\"type\":\"");
+    response->print(isDir ? "dir" : "file");
+    response->print("\",\"name\":\"");
+    response->print(displayName);
+    response->print("\",\"path\":\"");
+    response->print(fullPath);
+    response->print("\",\"size\":");
+    response->print(entry.size());
+    response->print("}");
+    
     entry.close();
+    count++;
   }
-  output += "]";
-  request->send(200, "text/json", output);
+  
+  response->print("]");
+  request->send(response);
+  
   dir.close();
   sdcontrol.relinquishControl();
 
