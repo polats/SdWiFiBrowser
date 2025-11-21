@@ -14,6 +14,10 @@
 
 #ifdef ESP32
   #include <WiFi.h>
+  // Compatibility for ESP32 Core 3.x
+  #if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
+  #include <NetworkInterface.h>
+  #endif
 #elif defined(ESP8266)
   #include <ESP8266WiFi.h>
 #endif

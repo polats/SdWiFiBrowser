@@ -259,7 +259,7 @@ void FSWebServer::onHttpDownload(AsyncWebServerRequest *request) {
       request->send(500, "text/plain","DOWNLOAD:BADARGS");
       return;
     }
-    AsyncWebParameter* p = request->getParam(0);
+    const AsyncWebParameter* p = request->getParam(0);
     String path = p->value();
 
     AsyncWebServerResponse *response = request->beginResponse(200);
@@ -288,7 +288,7 @@ void FSWebServer::onHttpList(AsyncWebServerRequest * request) {
     request->send(500, "text/plain","LIST:BADARGS");
     return;
   }
-  AsyncWebParameter* p = request->getParam(0);
+  const AsyncWebParameter* p = request->getParam(0);
   String path = p->value();
 
   if (path != "/" && !SD.exists((char *)path.c_str())) {
@@ -353,7 +353,7 @@ void FSWebServer::onHttpDelete(AsyncWebServerRequest *request) {
     Serial.println("no path arg");
   } 
   else {
-    AsyncWebParameter* p = request->getParam(0);
+    const AsyncWebParameter* p = request->getParam(0);
     String path = "/"+p->value();
     Serial.print("path:");
     Serial.println(path);
