@@ -6,6 +6,7 @@
 #include "serial.h"
 #include "network.h"
 #include "config.h"
+#include "bluetooth.h"
 
 const char* PARAM_MESSAGE = "message";
 uint8_t printer_sd_type = 0;
@@ -58,6 +59,10 @@ void FSWebServer::begin(FS* fs) {
 
     server.on("/wifilist", HTTP_GET, [this](AsyncWebServerRequest *request) {
   		this->onHttpWifiList(request);
+  	});
+
+    server.on("/btstatus", HTTP_GET, [this](AsyncWebServerRequest *request) {
+  		this->onHttpBTStatus(request);
   	});
 
 	  server.onNotFound([this](AsyncWebServerRequest *request) {
@@ -181,6 +186,22 @@ void FSWebServer::onHttpWifiScan(AsyncWebServerRequest * request) {
     network.doScan();
     request->send(200, "text/json", "ok");
     return;
+}
+
+void FSWebServer::onHttpBTStatus(AsyncWebServerRequest *request) {
+  DEBUG_LOG("onHttpBTStatus\n");
+
+  String resp = "BT:";
+  
+  if (!BT.isEnabled()) {
+    resp += "Disabled";
+  } else if (BT.isConnected()) {
+    resp += "Connected";
+  } else {
+    resp += "Ready";
+  }
+  
+  request->send(200, "text/plain", resp);
 }
 
 bool FSWebServer::onHttpNotFound(AsyncWebServerRequest *request) {

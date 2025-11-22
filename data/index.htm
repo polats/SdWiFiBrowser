@@ -18,11 +18,16 @@
 
 <body>
     <div class="container">
-      <!-- WiFi Status Bar -->
+      <!-- Status Bars -->
       <div class="row mt-3">
-        <div class="col-xl-12">
+        <div class="col-xl-6">
           <div id="wifiStatus" class="alert alert-info" role="alert">
-            <strong>WiFi Status:</strong> <span id="wifiStatusText">Checking...</span>
+            <i class="fas fa-wifi"></i> <strong>WiFi:</strong> <span id="wifiStatusText">Checking...</span>
+          </div>
+        </div>
+        <div class="col-xl-6">
+          <div id="btStatus" class="alert alert-info" role="alert">
+            <i class="fas fa-bluetooth"></i> <strong>Bluetooth:</strong> <span id="btStatusText">Checking...</span>
           </div>
         </div>
       </div>
@@ -74,8 +79,10 @@
       });
       updateList();
       updateWifiStatus();
-      // Update WiFi status every 5 seconds
+      updateBTStatus();
+      // Update status every 5 seconds
       setInterval(updateWifiStatus, 5000);
+      setInterval(updateBTStatus, 5000);
     </script>
 </body>
 </html>

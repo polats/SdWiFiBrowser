@@ -50,28 +50,28 @@ function updateWifiStatus() {
                     
                     if (status.includes('Connected:')) {
                         var ip = status.split(':')[1];
-                        statusText.innerHTML = '🟢 <strong>WiFi Connected</strong> - IP: ' + ip;
+                        statusText.innerHTML = 'Connected - IP: ' + ip;
                         statusDiv.className = 'alert alert-success';
                     } else if (status.includes('Connecting')) {
-                        statusText.innerHTML = '🟡 <strong>Connecting to WiFi...</strong>';
+                        statusText.innerHTML = 'Connecting...';
                         statusDiv.className = 'alert alert-warning';
                     } else if (status.includes('Failed')) {
-                        statusText.innerHTML = '🔴 <strong>WiFi Connection Failed</strong> - Running in AP Mode';
+                        statusText.innerHTML = 'Connection Failed - AP Mode';
                         statusDiv.className = 'alert alert-danger';
                     } else if (status.includes('AP_Mode')) {
-                        statusText.innerHTML = '🔵 <strong>Access Point Mode</strong> - SSID: PERMA - IP: 192.168.4.1';
+                        statusText.innerHTML = 'AP Mode - SSID: PERMA';
                         statusDiv.className = 'alert alert-info';
                     } else {
-                        statusText.innerHTML = '⚪ <strong>Status Unknown</strong>';
+                        statusText.innerHTML = 'Unknown';
                         statusDiv.className = 'alert alert-secondary';
                     }
                 } else {
-                    statusText.innerHTML = '⚪ <strong>Status Unknown</strong>';
+                    statusText.innerHTML = 'Unknown';
                     statusDiv.className = 'alert alert-secondary';
                 }
             } else {
                 addDebugLog('WiFi status error: HTTP ' + xhr.status);
-                statusText.innerHTML = '⚠️ <strong>Cannot reach device</strong>';
+                statusText.innerHTML = 'Cannot reach device';
                 statusDiv.className = 'alert alert-warning';
             }
         }
@@ -81,7 +81,7 @@ function updateWifiStatus() {
         addDebugLog('WiFi status timeout');
         var statusDiv = document.getElementById('wifiStatus');
         var statusText = document.getElementById('wifiStatusText');
-        statusText.innerHTML = '⚠️ <strong>Request timeout</strong>';
+        statusText.innerHTML = 'Request timeout';
         statusDiv.className = 'alert alert-warning';
     };
     
@@ -89,7 +89,7 @@ function updateWifiStatus() {
         addDebugLog('WiFi status connection error');
         var statusDiv = document.getElementById('wifiStatus');
         var statusText = document.getElementById('wifiStatusText');
-        statusText.innerHTML = '⚠️ <strong>Connection error</strong>';
+        statusText.innerHTML = 'Connection error';
         statusDiv.className = 'alert alert-warning';
     };
     
@@ -98,6 +98,68 @@ function updateWifiStatus() {
         xhr.send(null);
     } catch(e) {
         addDebugLog('WiFi status exception: ' + e.message);
+    }
+}
+
+function updateBTStatus() {
+    var xhr = new XMLHttpRequest();
+    xhr.timeout = 5000;
+    
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            var statusDiv = document.getElementById('btStatus');
+            var statusText = document.getElementById('btStatusText');
+            
+            if (xhr.status == 200) {
+                var resp = xhr.responseText;
+                addDebugLog('BT status: ' + resp);
+                
+                if (resp.startsWith('BT:')) {
+                    var status = resp.substring(3);
+                    
+                    if (status === 'Connected') {
+                        statusText.innerHTML = 'Connected';
+                        statusDiv.className = 'alert alert-success';
+                    } else if (status === 'Ready') {
+                        statusText.innerHTML = 'Ready (No client)';
+                        statusDiv.className = 'alert alert-info';
+                    } else if (status === 'Disabled') {
+                        statusText.innerHTML = 'Disabled';
+                        statusDiv.className = 'alert alert-secondary';
+                    } else {
+                        statusText.innerHTML = 'Unknown';
+                        statusDiv.className = 'alert alert-secondary';
+                    }
+                } else {
+                    statusText.innerHTML = 'Unknown';
+                    statusDiv.className = 'alert alert-secondary';
+                }
+            } else {
+                statusText.innerHTML = 'Error';
+                statusDiv.className = 'alert alert-warning';
+            }
+        }
+    };
+    
+    xhr.ontimeout = function() {
+        var statusDiv = document.getElementById('btStatus');
+        var statusText = document.getElementById('btStatusText');
+        statusText.innerHTML = 'Timeout';
+        statusDiv.className = 'alert alert-warning';
+    };
+    
+    xhr.onerror = function() {
+        var statusDiv = document.getElementById('btStatus');
+        var statusText = document.getElementById('btStatusText');
+        statusText.innerHTML = 'Error';
+        statusDiv.className = 'alert alert-warning';
+    };
+    
+    try {
+        xhr.open('GET', '/btstatus', true);
+        xhr.send(null);
+    } catch(e) {
+        addDebugLog('BT status exception: ' + e.message);
     }
 }
 

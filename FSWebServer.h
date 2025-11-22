@@ -77,6 +77,7 @@ protected:
     void onHttpWifiStatus(AsyncWebServerRequest *request);
     void onHttpWifiAP(AsyncWebServerRequest *request);
     void onHttpWifiList(AsyncWebServerRequest *request);
+    void onHttpBTStatus(AsyncWebServerRequest *request);
 };
 
 extern FSWebServer server;
